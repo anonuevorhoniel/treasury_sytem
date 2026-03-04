@@ -15,11 +15,16 @@ class OfficeController extends Controller
     public function index(Request $request)
     {
         $data = Office::query();
-        $pagination = pagination($request, $data);
-        $data = $data->skip($pagination["offset"])->take($pagination["limit"])->get();
-        $pagination = pageInfo($pagination, $data->count());
-
-        return response()->json(compact('data', 'pagination'));
+        $page = $request->page;
+        if ($page) {
+            $pagination = pagination($request, $data);
+            $data = $data->skip($pagination["offset"])->take($pagination["limit"])->get();
+            $pagination = pageInfo($pagination, $data->count());
+            return response()->json(compact('data', 'pagination'));
+        } else {
+            $data = $data->get();
+            return response($data);
+        }
     }
 
     /**
