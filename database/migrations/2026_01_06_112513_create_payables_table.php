@@ -20,12 +20,9 @@ return new class extends Migration
             $table->string('office_id');
             $table->date('date');
             $table->longText('particulars');
-            $table->decimal('ps')->nullable();
-            $table->decimal('ps_deduction')->nullable();
-            $table->decimal('mooe')->nullable();
-            $table->decimal('mooe_deduction')->nullable();
-            $table->decimal('co')->nullable();
-            $table->decimal('co_deduction')->nullable();
+            $table->string('fund_type');
+            $table->decimal('value');
+            $table->decimal('deduction');
             $table->softDeletes();
             $table->timestamps();
         });

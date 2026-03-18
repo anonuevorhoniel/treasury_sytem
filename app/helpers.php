@@ -22,6 +22,14 @@ function pageInfo($pagination, $total_current)
     return $data;
 }
 
+function paginate($request, $data)
+{
+    $pagination = pagination($request, $data);
+    $data = $data->skip($pagination["offset"])->take($pagination["limit"])->get();
+    $pagination = pageInfo($pagination, $data->count());
+    return [$data, $pagination];
+}
+
 function months()
 {
     return [

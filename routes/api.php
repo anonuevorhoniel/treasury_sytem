@@ -1,9 +1,11 @@
 <?php
 
+use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\OfficeController;
 use App\Http\Controllers\PayableController;
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -29,6 +31,16 @@ Route::middleware("auth:sanctum")->group(function () {
     });
 
     Route::controller(OfficeController::class)->prefix('/offices')->group(function () {
+        Route::get('/', 'index');
+        Route::post('/store', 'store');
+    });
+
+    Route::controller(UserController::class)->prefix('/users')->group(function () {
+        Route::get('/', 'index');
+        Route::post('/store', 'store');
+    });
+
+    Route::controller(ActivityLogController::class)->prefix('/activity-logs')->group(function () {
         Route::get('/', 'index');
         Route::post('/store', 'store');
     });

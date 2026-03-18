@@ -58,13 +58,10 @@ class PayableController extends Controller
             "obr_number" => "required",
             "date" => "required",
             "particulars" => "required",
-            "ps" => "sometimes",
-            "ps_deduction" => "sometimes",
-            "mooe" => "sometimes",
-            "mooe_deduction" => "sometimes",
-            "co" => "sometimes",
-            "co_deduction" => "sometimes",
-            "office_id"=> "required"
+            "fund_type" => "required",
+            "value" => "required",
+            "deduction" => "required",
+            "office_id" => "required"
         ]);
 
         try {
@@ -103,12 +100,10 @@ class PayableController extends Controller
             "obr_number" => "required",
             "date" => "required",
             "particulars" => "required",
-            "ps" => "sometimes",
-            "ps_deduction" => "sometimes",
-            "mooe" => "sometimes",
-            "mooe_deduction" => "sometimes",
-            "co" => "sometimes",
-            "co_deduction" => "sometimes",
+            "fund_type" => "required",
+            "value" => "required",
+            "deduction" => "required",
+            "office_id" => "required"
         ]);
 
         try {
