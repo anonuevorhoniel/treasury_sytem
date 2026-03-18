@@ -26,7 +26,7 @@ class PayableController extends Controller
                 [$year, $month] = explode('-', $monthInput);
                 $query->whereMonth('date', $month)
                     ->whereYear('date', $year);
-            });
+            })->orderBy('date', 'DESC');
         $pagination = pagination($request, $data);
         $data = $data->skip($pagination["offset"])->take($pagination["limit"])->get();
         $pagination = pageInfo($pagination, $data->count());
