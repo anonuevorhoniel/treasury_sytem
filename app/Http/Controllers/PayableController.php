@@ -125,46 +125,47 @@ class PayableController extends Controller
     public function print(Request $request)
     {
         $validation =  $request->validate([
+            'type' => 'required',
+            'office_id' => 'required|exists:tbl_offices,id',
             'from_date' => 'required',
             'to_date' => 'required',
         ]);
-        $from_date = Carbon::parse($validation['from_date'])->startOfDay();
-        $to_date = Carbon::parse($validation['to_date'])->endOfDay();
-        $template = public_path('payable/Payable.xlsx');
-        $dummyPath = public_path('payable/dummy.xlsx');
-        $spreadsheet = IOFactory::load($template);
-        $active = $spreadsheet->getActiveSheet();
+        try {
+            $from_date = Carbon::parse($validation['from_date'])->startOfDay();
+            $to_date = Carbon::parse($validation['to_date'])->endOfDay();
+            $template = public_path('payable/Payable.xlsx');
+            $dummyPath = public_path('payable/dummy.xlsx');
+            $spreadsheet = IOFactory::load($template);
+            $active = $spreadsheet->getActiveSheet();
 
-        $row = 2;
-        $data = Payable::whereBetween('date', [$from_date, $to_date])->get();
+            $row = 2;
+            $data = Payable::whereBetween('date', [$from_date, $to_date])
+                ->where('office_id', $validation['office_id'])
+                ->where('type', $validation['type'])
+                ->get();
 
-        foreach ($data as $payable) {
-            $active->setCellValueExplicit("A$row", $payable->dv_number, DataType::TYPE_STRING);
-            $active->setCellValueExplicit("B$row", $payable->obr_number, DataType::TYPE_STRING);
-            $active->setCellValueExplicit("C$row", $payable->check_number, DataType::TYPE_STRING);
-            $active->setCellValueExplicit("D$row", $payable->particulars, DataType::TYPE_STRING);
-            $active->setCellValueExplicit("E$row", $payable->date, DataType::TYPE_STRING);
-            $active->setCellValueExplicit("F$row", $payable->ps, DataType::TYPE_STRING);
-            $active->setCellValueExplicit("G$row", $payable->ps_deduction, DataType::TYPE_STRING);
-            if ($payable->ps && $payable->ps_deduction) {
-                $active->setCellValueExplicit("H$row", $payable->ps - $payable->ps_deduction, DataType::TYPE_STRING);
+            foreach ($data as $payable) {
+                $active->setCellValue("A$row", $payable->dv_number);
+                $active->setCellValue("B$row", $payable->obr_number);
+                $active->setCellValue("C$row", $payable->check_number);
+                $active->setCellValue("D$row", $payable->particulars);
+                $active->setCellValue("E$row", $payable->date);
+                $active->setCellValue("F$row", number_format($payable->value, 2));
+                $active->setCellValue("G$row", number_format($payable->deduction, 2));
+                $active->setCellValue("H$row", number_format($payable->value - $payable->deduction, 2));
+                styleArray($active, $row, "A", "N");
+                $row++;
             }
-            $active->setCellValueExplicit("I$row", $payable->mooe, DataType::TYPE_STRING);
-            $active->setCellValueExplicit("J$row", $payable->mooe_deduction, DataType::TYPE_STRING);
-            $active->setCellValueExplicit("K$row", $payable->mooe - $payable->mooe_deduction, DataType::TYPE_STRING);
-            $active->setCellValueExplicit("L$row", $payable->co, DataType::TYPE_STRING);
-            $active->setCellValueExplicit("M$row", $payable->co_deduction, DataType::TYPE_STRING);
-            $active->setCellValueExplicit("N$row", $payable->co - $payable->co_deduction, DataType::TYPE_STRING);
 
-            $row++;
+            $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+            $writer->save($dummyPath);
+
+            return response()->file($dummyPath, [
+                'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'Content-Disposition' => 'attachment; filename="Provincial_Report.xlsx"',
+            ])->deleteFileAfterSend(true);
+        } catch (Exception $e) {
+            return response()->json($e->getMessage(), 422);
         }
-
-        $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
-        $writer->save($dummyPath);
-
-        return response()->file($dummyPath, [
-            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            'Content-Disposition' => 'attachment; filename="Provincial_Report.xlsx"',
-        ])->deleteFileAfterSend(true);
     }
 }

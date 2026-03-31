@@ -1,5 +1,7 @@
 <?php
 
+use PhpOffice\PhpSpreadsheet\Style\Border;
+
 function pagination($request, $data, $limit = 10)
 {
     $page = $request->page;
@@ -29,6 +31,21 @@ function paginate($request, $data)
     $pagination = pageInfo($pagination, $data->count());
     return [$data, $pagination];
 }
+
+function styleArray($activeWorkSheet, $row, $from, $to)
+{
+    $activeWorkSheet->getStyle("$from$row:$to$row")->applyFromArray([
+        'borders' => [
+            'allBorders' => [
+                'borderStyle' => Border::BORDER_THIN,
+                'color' => ['argb' => 'FF000000'],
+            ],
+        ],
+    ]);
+
+    $row++;
+}
+
 
 function months()
 {

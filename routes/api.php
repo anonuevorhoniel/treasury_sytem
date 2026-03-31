@@ -33,6 +33,8 @@ Route::middleware("auth:sanctum")->group(function () {
     Route::controller(OfficeController::class)->prefix('/offices')->group(function () {
         Route::get('/', 'index');
         Route::post('/store', 'store');
+        Route::get('/{office}', 'show');
+        Route::post('/{office}/update', 'update');
     });
 
     Route::controller(UserController::class)->prefix('/users')->group(function () {

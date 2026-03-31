@@ -14,7 +14,12 @@ class OfficeController extends Controller
      */
     public function index(Request $request)
     {
-        $data = Office::query();
+        $search = $request->search;
+        $data = Office::when($search, function ($query) use ($search) {
+            $query->where(function ($query) use ($search) {
+                $query->where('name', 'like', "%$search%");
+            });
+        });
         $page = $request->page;
         if ($page) {
             $pagination = pagination($request, $data);
@@ -57,7 +62,7 @@ class OfficeController extends Controller
      */
     public function show(Office $office)
     {
-        //
+        return response()->json($office);
     }
 
     /**
@@ -73,7 +78,16 @@ class OfficeController extends Controller
      */
     public function update(Request $request, Office $office)
     {
-        //
+        $validation = $request->validate([
+            'name' => 'required'
+        ]);
+
+        try {
+            $office->update($validation);
+            return response()->json('success');
+        } catch (Exception $e) {
+            throw new Error($e->getMessage());
+        }
     }
 
     /**
