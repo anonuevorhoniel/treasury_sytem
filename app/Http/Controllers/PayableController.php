@@ -150,9 +150,21 @@ class PayableController extends Controller
                 $active->setCellValue("C$row", $payable->check_number);
                 $active->setCellValue("D$row", $payable->particulars);
                 $active->setCellValue("E$row", $payable->date);
-                $active->setCellValue("F$row", number_format($payable->value, 2));
-                $active->setCellValue("G$row", number_format($payable->deduction, 2));
-                $active->setCellValue("H$row", number_format($payable->value - $payable->deduction, 2));
+                if ($payable->fund_type == "ps") {
+                    $active->setCellValue("F$row", number_format($payable->value, 2));
+                    $active->setCellValue("G$row", number_format($payable->deduction, 2));
+                    $active->setCellValue("H$row", number_format($payable->value - $payable->deduction, 2));
+                }
+                if ($payable->fund_type == "mooe") {
+                    $active->setCellValue("I$row", number_format($payable->value, 2));
+                    $active->setCellValue("J$row", number_format($payable->deduction, 2));
+                    $active->setCellValue("K$row", number_format($payable->value - $payable->deduction, 2));
+                }
+                if ($payable->fund_type == "co") {
+                    $active->setCellValue("L$row", number_format($payable->value, 2));
+                    $active->setCellValue("M$row", number_format($payable->deduction, 2));
+                    $active->setCellValue("N$row", number_format($payable->value - $payable->deduction, 2));
+                }
                 styleArray($active, $row, "A", "N");
                 $row++;
             }
